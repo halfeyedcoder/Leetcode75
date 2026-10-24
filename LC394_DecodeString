@@ -1,0 +1,39 @@
+class Solution {
+    public String decodeString(String s) {
+
+        Stack<Integer> counts = new Stack<>();
+        Stack<StringBuilder> resultStack = new Stack<>();
+        StringBuilder currentString = new StringBuilder();
+        int k = 0;
+
+        for (char ch : s.toCharArray()) {
+            if (Character.isDigit(ch)) {
+                // Handle multi-digit numbers (e.g., "100[a]")
+                k = k * 10 + (ch - '0');
+            } else if (ch == '[') {
+                // Push the current multiplier and string state onto the stacks
+                counts.push(k);
+                resultStack.push(currentString);
+                
+                // Reset for the inner bracket context
+                currentString = new StringBuilder();
+                k = 0;
+            } else if (ch == ']') {
+                // Decode the current layer
+                StringBuilder decodedString = resultStack.pop();
+                int repeatTimes = counts.pop();
+                
+                // Append the currentString repeated k times to the parent string
+                for (int i = 0; i < repeatTimes; i++) {
+                    decodedString.append(currentString);
+                }
+                currentString = decodedString;
+            } else {
+                // Regular character: append to the current working string
+                currentString.append(ch);
+            }
+        }
+
+        return currentString.toString();
+    }
+}
